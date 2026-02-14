@@ -1,24 +1,41 @@
 import imagekit from "@/configs/imageKit";
 import prisma from "@/lib/prisma";
-import { getAuth } from "@clerk/nextjs/server";
+import { clerkClient, getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 // create the store
 export async function POST(request){
     try {
         const {userId} = getAuth(request)
+        if(!userId){
+            return NextResponse.json({error: "not authorized"}, {status: 401})
+        }
+
+        // Fallback sync: ensure Clerk user exists in Prisma before creating store.
+        const client = await clerkClient()
+        const clerkUser = await client.users.getUser(userId)
+        const email = clerkUser.emailAddresses?.[0]?.emailAddress || ""
+        const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ").trim() || clerkUser.username || "User"
+        const profileImage = clerkUser.imageUrl || ""
+
+        await prisma.user.upsert({
+            where: { id: userId },
+            update: { email, name, image: profileImage },
+            create: { id: userId, email, name, image: profileImage }
+        })
+
         // Get the data from the form
         const formData = await request.formData()
 
-        const name = formData.get("name")
+        const storeName = formData.get("name")
         const username = formData.get("username").trim()
         const description = formData.get("description")
-        const email = formData.get("email")
+        const storeEmail = formData.get("email")
         const contact = formData.get("contact")
         const address = formData.get("address")
         const image = formData.get("image")
 
-        if(!name || !username || !description || !email || !contact || !address || !image){
+        if(!storeName || !username || !description || !storeEmail || !contact || !address || !image){
             return NextResponse.json({error: "missing store info"}, {status: 400})
         }
 
@@ -61,10 +78,10 @@ export async function POST(request){
         const newStore = await prisma.store.create({
             data: {
                 userId,
-                name,
+                name: storeName,
                 description,
                 username: username.toLowerCase(),
-                email,
+                email: storeEmail,
                 contact,
                 address,
                 logo: optimizedImage
