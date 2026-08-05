@@ -9,7 +9,7 @@ export default async function AdminOrderDetailPage({ params }) {
 
   const order = await prisma.order.findUnique({
     where: { id },
-    include: { items: true, user: true },
+    include: { items: true, user: { select: { name: true, email: true } } },
   });
   if (!order) notFound();
 

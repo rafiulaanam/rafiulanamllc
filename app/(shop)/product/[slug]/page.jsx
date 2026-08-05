@@ -46,7 +46,9 @@ export default async function ProductDetailPage({ params }) {
     <main className="mx-auto max-w-6xl px-6 py-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // JSON.stringify doesn't escape "<", so a product name/description
+        // containing "</script>" could otherwise break out of this tag.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <div className="grid gap-8 md:grid-cols-2">
         <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-100">

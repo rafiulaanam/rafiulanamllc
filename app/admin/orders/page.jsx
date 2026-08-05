@@ -10,7 +10,7 @@ export default async function AdminOrdersPage({ searchParams }) {
 
   const orders = await prisma.order.findMany({
     where: status ? { status } : undefined,
-    include: { user: true },
+    include: { user: { select: { name: true, email: true } } },
     orderBy: { createdAt: "desc" },
     take: 200,
   });

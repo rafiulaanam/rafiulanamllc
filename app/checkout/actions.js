@@ -1,9 +1,11 @@
 "use server";
 
+import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
 import stripe from "@/lib/stripe";
 import { getCart, getCartIdentity } from "@/lib/cart";
 import { checkoutAddressSchema } from "@/lib/validations";
+import { rateLimit, getClientIp } from "@/lib/rateLimit";
 
 // Tax and shipping are 0 for MVP launch (flagged as an open PRD item);
 // revisit once a tax jurisdiction / shipping rate is decided.
@@ -12,6 +14,10 @@ const SHIPPING = 0;
 
 export async function createCheckoutIntent(addressInput) {
   if (!stripe) throw new Error("Stripe is not configured yet");
+
+  const ip = getClientIp(await headers());
+  const { success } = rateLimit(`checkout:${ip}`, { limit: 20, windowMs: 10 * 60 * 1000 });
+  if (!success) throw new Error("Too many checkout attempts. Please try again in a few minutes.");
 
   const address = checkoutAddressSchema.parse(addressInput);
 

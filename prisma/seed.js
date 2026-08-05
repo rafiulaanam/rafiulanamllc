@@ -4,6 +4,12 @@ const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 
 async function main() {
+  if (process.env.NODE_ENV === "production" && !process.env.SEED_ADMIN_PASSWORD) {
+    throw new Error(
+      "Refusing to seed a default admin password in production — set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD explicitly."
+    );
+  }
+
   const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@example.com";
   const adminPassword = process.env.SEED_ADMIN_PASSWORD || "changeme123";
 
