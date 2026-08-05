@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getOrderByPaymentIntentId } from "@/lib/orders";
 import { formatPrice } from "@/lib/currency";
 
-export const metadata = { title: "Order confirmed | RafiulAnamLLC" };
+export const metadata = { title: "Order confirmed", robots: { index: false } };
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

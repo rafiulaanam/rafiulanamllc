@@ -37,6 +37,7 @@ export default function Navbar({ categories = [], cartItemCount = 0 }) {
               type="search"
               name="q"
               placeholder="Search products..."
+              aria-label="Search products"
               className="w-48 rounded-l-lg border border-r-0 border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-gray-500"
             />
             <button
@@ -50,6 +51,7 @@ export default function Navbar({ categories = [], cartItemCount = 0 }) {
 
           <Link
             href="/cart"
+            aria-label={cartItemCount > 0 ? `Cart, ${cartItemCount} item(s)` : "Cart"}
             className="relative flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
           >
             <ShoppingCart size={18} />

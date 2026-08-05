@@ -14,6 +14,8 @@ const STATUS_LABEL = {
   REFUNDED: "Refunded",
 };
 
+export const metadata = { title: "Order detail" };
+
 export default async function OrderDetailPage({ params }) {
   const session = await auth();
   if (!session?.user) redirect("/login");

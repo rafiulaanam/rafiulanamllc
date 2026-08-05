@@ -37,11 +37,13 @@ export default function CategoryForm({ categories, category, onDone }) {
       <input
         required
         placeholder="Category name"
+        aria-label="Category name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
       />
       <select
+        aria-label="Parent category"
         value={parentCategoryId}
         onChange={(e) => setParentCategoryId(e.target.value)}
         className="rounded-lg border border-gray-300 px-3 py-2 text-sm"

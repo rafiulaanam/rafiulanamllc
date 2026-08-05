@@ -15,11 +15,11 @@ export default async function AdminCategoriesPage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-gray-200 text-xs uppercase text-gray-400">
+            <thead className="border-b border-gray-200 text-xs uppercase text-gray-600">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Parent</th>
-                <th className="px-4 py-3" />
+                <th className="px-4 py-3"><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
             <tbody>
@@ -36,7 +36,7 @@ export default async function AdminCategoriesPage() {
               ))}
               {categories.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={3} className="px-4 py-8 text-center text-gray-500">
                     No categories yet.
                   </td>
                 </tr>

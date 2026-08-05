@@ -21,7 +21,7 @@ export default function ProductCard({ product }) {
             sizes="(max-width: 768px) 50vw, 25vw"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-gray-400">
+          <div className="flex h-full items-center justify-center text-sm text-gray-500">
             No image
           </div>
         )}
@@ -33,11 +33,11 @@ export default function ProductCard({ product }) {
       </div>
       <div>
         <p className="text-xs text-gray-500">{product.category?.name}</p>
-        <h3 className="line-clamp-1 text-sm font-medium text-gray-900">{product.name}</h3>
+        <h2 className="line-clamp-1 text-sm font-medium text-gray-900">{product.name}</h2>
         <div className="mt-1 flex items-center gap-2">
           <span className="text-sm font-semibold">{priceRange}</span>
           {product.compareAtPrice && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="text-xs text-gray-500 line-through">
               {formatPrice(product.compareAtPrice)}
             </span>
           )}

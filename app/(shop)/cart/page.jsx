@@ -3,7 +3,7 @@ import { getCartSummary } from "@/lib/cart";
 import { formatPrice } from "@/lib/currency";
 import CartItemRow from "@/components/storefront/CartItemRow";
 
-export const metadata = { title: "Your cart | RafiulAnamLLC" };
+export const metadata = { title: "Your cart", robots: { index: false } };
 
 export default async function CartPage() {
   const { items, subtotal } = await getCartSummary();
@@ -32,7 +32,7 @@ export default async function CartPage() {
               <span>Subtotal</span>
               <span className="font-semibold text-gray-900">{formatPrice(subtotal)}</span>
             </div>
-            <p className="mt-1 text-xs text-gray-400">Free shipping. No tax at this time.</p>
+            <p className="mt-1 text-xs text-gray-500">Free shipping. No tax at this time.</p>
             <Link
               href="/checkout"
               className="mt-4 block w-full rounded-lg bg-gray-900 py-2.5 text-center text-sm font-medium text-white"

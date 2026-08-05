@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 
-// Token generation + email delivery is wired up once the email provider
-// (Milestone: Checkout & Payments / Accounts) is in place.
+// Token generation + email delivery go live once RESEND_API_KEY is configured.
 export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
 
@@ -25,6 +24,7 @@ export default function ForgotPasswordPage() {
             type="email"
             required
             placeholder="Email"
+            aria-label="Email"
             className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
           />
           <button
