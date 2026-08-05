@@ -1,5 +1,6 @@
 import Navbar from "@/components/storefront/Navbar";
 import Footer from "@/components/storefront/Footer";
+import CartDrawer from "@/components/storefront/CartDrawer";
 import { getCategories } from "@/lib/catalog";
 import { getCartSummary } from "@/lib/cart";
 
@@ -15,6 +16,7 @@ export default async function ShopLayout({ children }) {
       <Navbar categories={categories} cartItemCount={itemCount} />
       <div className="flex-1">{children}</div>
       <Footer />
+      <CartDrawer />
     </div>
   );
 }

@@ -1,10 +1,21 @@
-import { Outfit } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import Providers from "./providers";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
-const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"] });
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
+});
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
@@ -23,10 +34,19 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${outfit.className} antialiased`}>
+    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+      <body className="font-sans antialiased">
         <Providers>
-          <Toaster />
+          <Toaster
+            toastOptions={{
+              style: {
+                background: "#1c1b19",
+                color: "#f7f4ef",
+                borderRadius: "10px",
+                fontSize: "14px",
+              },
+            }}
+          />
           {children}
         </Providers>
       </body>

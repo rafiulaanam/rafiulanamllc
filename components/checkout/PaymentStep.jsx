@@ -5,7 +5,7 @@ import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import toast from "react-hot-toast";
 import { formatPrice } from "@/lib/currency";
 
-export default function PaymentStep({ total }) {
+export default function PaymentStep({ total, onBack }) {
   const stripe = useStripe();
   const elements = useElements();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,12 +31,21 @@ export default function PaymentStep({ total }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <h2 className="text-sm font-semibold">Payment</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-ink">Payment</h2>
+        <button
+          type="button"
+          onClick={onBack}
+          className="text-xs text-stone underline underline-offset-2 hover:text-clay"
+        >
+          Back to shipping
+        </button>
+      </div>
       <PaymentElement />
       <button
         type="submit"
         disabled={!stripe || isSubmitting}
-        className="rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+        className="rounded-lg bg-ink py-2.5 text-sm font-medium text-canvas transition hover:bg-clay disabled:opacity-50"
       >
         {isSubmitting ? "Processing..." : `Pay ${formatPrice(total)}`}
       </button>

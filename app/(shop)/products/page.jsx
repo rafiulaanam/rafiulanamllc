@@ -24,7 +24,7 @@ export default async function ProductsPage({ searchParams }) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-8">
-      <h1 className="mb-4 text-2xl font-semibold">All products</h1>
+      <h1 className="font-display mb-4 text-2xl text-ink">All products</h1>
       <ProductFilters action="/products" values={{ minPrice, maxPrice, sort }} />
       <div className="mt-6">
         <ProductGrid products={products} />

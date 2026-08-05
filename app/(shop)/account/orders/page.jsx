@@ -24,30 +24,30 @@ export default async function OrdersPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-8">
-      <Link href="/account" className="text-sm text-gray-500 hover:underline">
+      <Link href="/account" className="text-sm text-stone transition hover:text-clay">
         ← Back to account
       </Link>
-      <h1 className="mb-6 mt-2 text-2xl font-semibold">Your orders</h1>
+      <h1 className="mb-6 mt-2 font-display text-2xl text-ink">Your orders</h1>
 
       {orders.length === 0 ? (
-        <p className="text-gray-500">You haven&apos;t placed any orders yet.</p>
+        <p className="text-stone">You haven&apos;t placed any orders yet.</p>
       ) : (
         <div className="flex flex-col gap-3">
           {orders.map((order) => (
             <Link
               key={order.id}
               href={`/account/orders/${order.id}`}
-              className="flex items-center justify-between rounded-xl border border-gray-200 p-4 hover:border-gray-400"
+              className="flex items-center justify-between rounded-xl border border-sand p-4 hover:border-clay"
             >
               <div>
                 <p className="text-sm font-medium">#{order.orderNumber}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-stone">
                   {new Date(order.createdAt).toLocaleDateString()} · {order.items.length} item(s)
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-sm font-semibold">{formatPrice(order.total)}</p>
-                <p className="text-xs text-gray-500">{STATUS_LABEL[order.status] ?? order.status}</p>
+                <p className="text-xs text-stone">{STATUS_LABEL[order.status] ?? order.status}</p>
               </div>
             </Link>
           ))}

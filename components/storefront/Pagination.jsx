@@ -8,7 +8,7 @@ export default function Pagination({ page, totalPages, buildHref }) {
       <PageLink page={page - 1} disabled={page <= 1} buildHref={buildHref}>
         Prev
       </PageLink>
-      <span className="px-2 text-gray-500">
+      <span className="px-2 text-stone">
         Page {page} of {totalPages}
       </span>
       <PageLink page={page + 1} disabled={page >= totalPages} buildHref={buildHref}>
@@ -21,13 +21,16 @@ export default function Pagination({ page, totalPages, buildHref }) {
 function PageLink({ page, disabled, buildHref, children }) {
   if (disabled) {
     return (
-      <span className="cursor-not-allowed rounded-lg border border-gray-200 px-3 py-1.5 text-gray-300">
+      <span className="cursor-not-allowed rounded-lg border border-sand px-3 py-1.5 text-stone/50">
         {children}
       </span>
     );
   }
   return (
-    <Link href={buildHref(page)} className="rounded-lg border border-gray-300 px-3 py-1.5 hover:bg-gray-50">
+    <Link
+      href={buildHref(page)}
+      className="rounded-lg border border-sand px-3 py-1.5 text-ink transition hover:border-clay hover:text-clay"
+    >
       {children}
     </Link>
   );

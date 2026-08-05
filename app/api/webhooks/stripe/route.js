@@ -43,17 +43,33 @@ export async function POST(request) {
 async function handlePaymentSucceeded(paymentIntent) {
   // Idempotent: Stripe can deliver the same event more than once.
   const existing = await prisma.order.findUnique({ where: { paymentIntentId: paymentIntent.id } });
-  if (existing) return;
+  if (existing) {
+    console.log(`[stripe webhook] ${paymentIntent.id}: order already exists (${existing.id}), skipping`);
+    return;
+  }
 
   const { cartId, userId, guestEmail, shippingAddress: shippingAddressJson } =
     paymentIntent.metadata || {};
-  if (!cartId || !shippingAddressJson) return;
+  if (!cartId || !shippingAddressJson) {
+    console.error(
+      `[stripe webhook] ${paymentIntent.id}: missing required metadata`,
+      { cartId, hasShippingAddress: Boolean(shippingAddressJson), metadata: paymentIntent.metadata }
+    );
+    return;
+  }
 
   const cart = await prisma.cart.findUnique({
     where: { id: cartId },
     include: { items: { include: { productVariant: { include: { product: true } } } } },
   });
-  if (!cart || cart.items.length === 0) return;
+  if (!cart) {
+    console.error(`[stripe webhook] ${paymentIntent.id}: cart ${cartId} not found (already converted or deleted?)`);
+    return;
+  }
+  if (cart.items.length === 0) {
+    console.error(`[stripe webhook] ${paymentIntent.id}: cart ${cartId} exists but has no items`);
+    return;
+  }
 
   const shippingAddress = JSON.parse(shippingAddressJson);
   const subtotal = cart.items.reduce(
