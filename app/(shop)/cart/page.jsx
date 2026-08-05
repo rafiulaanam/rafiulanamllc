@@ -32,15 +32,13 @@ export default async function CartPage() {
               <span>Subtotal</span>
               <span className="font-semibold text-gray-900">{formatPrice(subtotal)}</span>
             </div>
-            <p className="mt-1 text-xs text-gray-400">Tax and shipping calculated at checkout.</p>
-            <button
-              type="button"
-              disabled
-              title="Checkout is coming in the next milestone"
-              className="mt-4 w-full cursor-not-allowed rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white opacity-50"
+            <p className="mt-1 text-xs text-gray-400">Free shipping. No tax at this time.</p>
+            <Link
+              href="/checkout"
+              className="mt-4 block w-full rounded-lg bg-gray-900 py-2.5 text-center text-sm font-medium text-white"
             >
               Proceed to checkout
-            </button>
+            </Link>
           </div>
         </div>
       )}

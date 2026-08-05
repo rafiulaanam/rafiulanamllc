@@ -28,8 +28,8 @@ This project is being built milestone by milestone per the PRD:
 
 1. **Project setup** — Next.js + Tailwind + Prisma schema + auth scaffolding ✅
 2. **Catalog** — categories, products (with variants), admin CRUD, CSV bulk import, storefront browse/category/search/detail pages ✅
-3. **Cart** — add/update/remove, persists for guests (cookie) and accounts (DB), merges into the account on login/register ✅ (this commit)
-4. Checkout & payments (Stripe)
+3. **Cart** — add/update/remove, persists for guests (cookie) and accounts (DB), merges into the account on login/register ✅
+4. **Checkout & payments** — Stripe Payment Intents + webhook-confirmed order creation ✅ (this commit; free shipping, no tax for MVP)
 5. Accounts — order history, address book, password reset
 6. Admin dashboard — orders, sales overview, low-stock alerts
 7. Polish — SEO, responsive QA, transactional emails
