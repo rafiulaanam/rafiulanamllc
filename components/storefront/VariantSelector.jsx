@@ -1,10 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { formatPrice } from "@/lib/currency";
+import { addToCart } from "@/app/cart/actions";
 
 export default function VariantSelector({ variants }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [quantity, setQuantity] = useState(1);
+
   const attributeKeys = useMemo(() => {
     const keys = new Set();
     variants.forEach((v) => Object.keys(v.attributes || {}).forEach((k) => keys.add(k)));
@@ -32,6 +38,19 @@ export default function VariantSelector({ variants }) {
       if (v.attributes?.[key]) values.add(v.attributes[key]);
     });
     return Array.from(values);
+  };
+
+  const handleAddToCart = () => {
+    if (!activeVariant) return;
+    startTransition(async () => {
+      try {
+        await addToCart(activeVariant.id, quantity);
+        toast.success("Added to cart");
+        router.refresh();
+      } catch (error) {
+        toast.error(error.message ?? "Could not add to cart");
+      }
+    });
   };
 
   return (
@@ -67,13 +86,28 @@ export default function VariantSelector({ variants }) {
         )}
       </div>
 
+      <div className="flex items-center gap-3">
+        <label htmlFor="quantity" className="text-sm text-gray-500">
+          Qty
+        </label>
+        <input
+          id="quantity"
+          type="number"
+          min={1}
+          max={activeVariant?.stockQuantity ?? 1}
+          value={quantity}
+          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+          className="w-16 rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
+        />
+      </div>
+
       <button
         type="button"
-        disabled={!activeVariant || activeVariant.stockQuantity <= 0}
-        onClick={() => toast("Cart is coming in the next milestone!")}
+        disabled={!activeVariant || activeVariant.stockQuantity <= 0 || isPending}
+        onClick={handleAddToCart}
         className="rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white disabled:opacity-50"
       >
-        Add to cart
+        {isPending ? "Adding..." : "Add to cart"}
       </button>
     </div>
   );

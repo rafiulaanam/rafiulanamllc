@@ -27,8 +27,8 @@ Multi-category e-commerce storefront + admin panel, built with Next.js (App Rout
 This project is being built milestone by milestone per the PRD:
 
 1. **Project setup** — Next.js + Tailwind + Prisma schema + auth scaffolding ✅
-2. **Catalog** — categories, products (with variants), admin CRUD, CSV bulk import, storefront browse/category/search/detail pages ✅ (this commit)
-3. Cart
+2. **Catalog** — categories, products (with variants), admin CRUD, CSV bulk import, storefront browse/category/search/detail pages ✅
+3. **Cart** — add/update/remove, persists for guests (cookie) and accounts (DB), merges into the account on login/register ✅ (this commit)
 4. Checkout & payments (Stripe)
 5. Accounts — order history, address book, password reset
 6. Admin dashboard — orders, sales overview, low-stock alerts

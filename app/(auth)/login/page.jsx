@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { mergeGuestCartOnLogin } from "@/app/cart/actions";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function LoginPage() {
       return;
     }
 
+    await mergeGuestCartOnLogin();
     router.push("/account");
     router.refresh();
   };

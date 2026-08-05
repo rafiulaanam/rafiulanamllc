@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Search, User, Menu, X } from "lucide-react";
+import { Search, User, Menu, X, ShoppingCart } from "lucide-react";
 
-export default function Navbar({ categories = [] }) {
+export default function Navbar({ categories = [], cartItemCount = 0 }) {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
 
@@ -47,6 +47,18 @@ export default function Navbar({ categories = [] }) {
               <Search size={16} />
             </button>
           </form>
+
+          <Link
+            href="/cart"
+            className="relative flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+          >
+            <ShoppingCart size={18} />
+            {cartItemCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-gray-900 text-[10px] text-white">
+                {cartItemCount > 9 ? "9+" : cartItemCount}
+              </span>
+            )}
+          </Link>
 
           <Link
             href={session?.user ? "/account" : "/login"}
