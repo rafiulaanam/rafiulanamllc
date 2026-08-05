@@ -1,163 +1,218 @@
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// Required for creating a User: id, name, email, image, cart (optional JSON string)
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
 model User {
-    id    String @id
-    name  String
-    email String
-    image String
-    cart  Json   @default("{}")
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  name          String?
+  image         String?
+  role          Role      @default(CUSTOMER)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-    // Relations
-    ratings     Rating[]
-    Address     Address[]
-    store       Store?
-    buyerOrders Order[]   @relation("BuyerRelation")
+  accounts  Account[]
+  sessions  Session[]
+  addresses Address[]
+  orders    Order[]
+  cart      Cart?
+  wishlist  Wishlist[]
 }
 
-// Required for creating a Product: name, description, mrp, price, images, category, storeId
-model Product {
-    id          String   @id @default(cuid())
-    name        String
-    description String
-    mrp         Float
-    price       Float
-    images      String[]
-    category    String
-    inStock     Boolean  @default(true)
-    storeId     String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+// --- NextAuth (Auth.js) required models ---
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
-    // Relations
-    store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
-    orderItems OrderItem[]
-    rating     Rating[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  fullName  String
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  zip       String
+  country   String
+  phone     String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+}
+
+model Category {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  parentCategoryId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  parentCategory Category?  @relation("CategoryToSubcategory", fields: [parentCategoryId], references: [id], onDelete: SetNull)
+  subcategories  Category[] @relation("CategoryToSubcategory")
+  products       Product[]
+}
+
+model Product {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  description    String
+  categoryId     String
+  basePrice      Float
+  compareAtPrice Float?
+  images         String[]
+  isActive       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  category     Category         @relation(fields: [categoryId], references: [id])
+  variants     ProductVariant[]
+  wishlistedBy Wishlist[]
+}
+
+model ProductVariant {
+  id            String @id @default(cuid())
+  productId     String
+  sku           String @unique
+  attributes    Json   @default("{}")
+  price         Float
+  stockQuantity Int    @default(0)
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String?  @unique
+  sessionId String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model CartItem {
+  id               String @id @default(cuid())
+  cartId           String
+  productVariantId String
+  quantity         Int    @default(1)
+
+  cart           Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productVariantId])
 }
 
 enum OrderStatus {
-    ORDER_PLACED
-    PROCESSING
-    SHIPPED
-    DELIVERED
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
 }
 
-enum PaymentMethod {
-    COD
-    STRIPE
+enum PaymentProvider {
+  STRIPE
 }
 
-// Required for creating an Order: total, userId, storeId, addressId, isPaid, paymentMethod, isCouponUsed, coupon (JSON), orderItems (nested)
+// guestEmail supports guest order tracking (order number + email lookup)
 model Order {
-    id            String        @id @default(cuid())
-    total         Float
-    status        OrderStatus   @default(ORDER_PLACED)
-    userId        String
-    storeId       String
-    addressId     String
-    isPaid        Boolean       @default(false)
-    paymentMethod PaymentMethod
-    createdAt     DateTime      @default(now())
-    updatedAt     DateTime      @updatedAt
-    isCouponUsed  Boolean       @default(false)
-    coupon        Json          @default("{}")
-    orderItems    OrderItem[]
+  id              String          @id @default(cuid())
+  orderNumber     String          @unique
+  userId          String?
+  guestEmail      String?
+  addressId       String?
+  status          OrderStatus     @default(PENDING)
+  subtotal        Float
+  tax             Float
+  shipping        Float
+  total           Float
+  currency        String          @default("usd")
+  shippingAddress Json
+  billingAddress  Json
+  paymentProvider PaymentProvider @default(STRIPE)
+  paymentIntentId String?         @unique
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
-    // Relations
-    user    User    @relation("BuyerRelation", fields: [userId], references: [id])
-    store   Store   @relation(fields: [storeId], references: [id])
-    address Address @relation(fields: [addressId], references: [id])
+  user    User?       @relation(fields: [userId], references: [id])
+  address Address?    @relation(fields: [addressId], references: [id])
+  items   OrderItem[]
 }
 
-// Required for creating an OrderItem: orderId, productId, quantity, price
 model OrderItem {
-    orderId   String
-    productId String
-    quantity  Int
-    price     Float
+  id                  String @id @default(cuid())
+  orderId             String
+  productVariantId    String
+  productNameSnapshot String
+  unitPrice           Float
+  quantity            Int
 
-    // Relations
-    order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-    product Product @relation(fields: [productId], references: [id])
-
-    @@id([orderId, productId])
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
 }
 
-// Required for creating a Rating: rating, review, userId, productId
-model Rating {
-    id        String   @id @default(cuid())
-    rating    Int
-    review    String
-    userId    String
-    productId String
-    orderId   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
 
-    // Relations
-    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-    @@unique([userId, productId, orderId])
-}
-
-// Required for creating an Address: userId, name, email, street, city, state, zip, country, phone
-model Address {
-    id        String   @id @default(cuid())
-    userId    String
-    name      String
-    email     String
-    street    String
-    city      String
-    state     String
-    zip       String
-    country   String
-    phone     String
-    createdAt DateTime @default(now())
-
-    // Relations
-    Order Order[]
-    user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-// Required for creating a Coupon: code, description, discount, forNewUser, isPublic, expiresAt
-model Coupon {
-    code        String   @id
-    description String
-    discount    Float
-    forNewUser  Boolean
-    forMember   Boolean  @default(false)
-    isPublic    Boolean
-    expiresAt   DateTime
-    createdAt   DateTime @default(now())
-}
-
-// Required for creating a Store: userId, name, username, email, contact, logo, description, address (optional: , status, isActive)
-model Store {
-    id          String   @id @default(cuid())
-    userId      String   @unique
-    name        String
-    description String
-    username    String   @unique
-    address     String
-    status      String   @default("pending")
-    isActive    Boolean  @default(false)
-    logo        String
-    email       String
-    contact     String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-
-    Product Product[]
-    Order   Order[]
-    user    User      @relation(fields: [userId], references: [id])
+  @@unique([userId, productId])
 }
