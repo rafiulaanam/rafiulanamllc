@@ -31,6 +31,6 @@ This project is being built milestone by milestone per the PRD:
 3. **Cart** — add/update/remove, persists for guests (cookie) and accounts (DB), merges into the account on login/register ✅
 4. **Checkout & payments** — Stripe Payment Intents + webhook-confirmed order creation ✅ (free shipping, no tax for MVP)
 5. **Accounts** — order history, address book (with checkout prefill + "save this address") ✅ (password reset UI is still a stub pending an email provider)
-6. **Admin dashboard** — order list/filter/status updates, customers, sales (30d) + low-stock alerts ✅ (this commit)
-7. Polish — SEO, responsive QA, transactional emails
+6. **Admin dashboard** — order list/filter/status updates, customers, sales (30d) + low-stock alerts ✅
+7. **Polish** — SEO (sitemap, robots.txt, per-page metadata, canonical URLs, noindex on account/admin/cart/checkout), fixed missing /about and /contact pages, transactional emails (order confirmation + shipping update via Resend), custom 404/error pages, route-level loading skeletons, and an accessibility pass (form labels, heading order, color contrast) verified with axe-core ✅ (this commit)
 8. Pre-launch — env audit, security review, performance pass

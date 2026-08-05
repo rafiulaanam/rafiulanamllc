@@ -4,7 +4,8 @@ import ProductFilters from "@/components/storefront/ProductFilters";
 import Pagination from "@/components/storefront/Pagination";
 
 export const metadata = {
-  title: "All products | RafiulAnamLLC",
+  title: "All products",
+  alternates: { canonical: "/products" },
 };
 
 export default async function ProductsPage({ searchParams }) {

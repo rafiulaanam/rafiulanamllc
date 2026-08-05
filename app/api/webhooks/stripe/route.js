@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import stripe from "@/lib/stripe";
 import prisma from "@/lib/prisma";
 import { generateOrderNumber } from "@/lib/orders";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 // Orders are only ever created here, after Stripe confirms payment — never
 // from the checkout page itself — so a failed payment can't create an order.
@@ -62,8 +63,8 @@ async function handlePaymentSucceeded(paymentIntent) {
 
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      await prisma.$transaction(async (tx) => {
-        await tx.order.create({
+      const order = await prisma.$transaction(async (tx) => {
+        const created = await tx.order.create({
           data: {
             orderNumber: generateOrderNumber(),
             userId: userId || null,
@@ -87,6 +88,7 @@ async function handlePaymentSucceeded(paymentIntent) {
               })),
             },
           },
+          include: { items: true },
         });
 
         for (const item of cart.items) {
@@ -97,7 +99,17 @@ async function handlePaymentSucceeded(paymentIntent) {
         }
 
         await tx.cart.delete({ where: { id: cart.id } });
+
+        return created;
       });
+
+      try {
+        await sendOrderConfirmationEmail(order, paymentIntent.receipt_email);
+      } catch (emailError) {
+        // The order is already committed — don't fail the webhook (and
+        // trigger a Stripe retry) over a transactional email hiccup.
+        console.error("[stripe webhook] order confirmation email failed:", emailError);
+      }
       return;
     } catch (error) {
       if (error.code === "P2002" && attempt < 2) continue; // order number collision, retry

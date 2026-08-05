@@ -39,7 +39,7 @@ export default async function AdminOrdersPage({ searchParams }) {
 
       <div className="mt-6 overflow-x-auto rounded-xl border border-gray-200 bg-white">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 text-xs uppercase text-gray-400">
+          <thead className="border-b border-gray-200 text-xs uppercase text-gray-600">
             <tr>
               <th className="px-4 py-3">Order</th>
               <th className="px-4 py-3">Customer</th>
@@ -72,7 +72,7 @@ export default async function AdminOrdersPage({ searchParams }) {
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
                   No orders {status ? `with status ${status}` : "yet"}.
                 </td>
               </tr>

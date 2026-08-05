@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { sendShippingUpdateEmail } from "@/lib/email";
 
 const VALID_STATUSES = [
   "PENDING",
@@ -28,9 +29,22 @@ export async function updateOrderStatus(orderId, status) {
     throw new Error("Invalid order status");
   }
 
-  // Shipping-confirmation emails go out here once the email provider
-  // (Resend) is wired up — status transitions to SHIPPED land in this branch.
-  await prisma.order.update({ where: { id: orderId }, data: { status } });
+  const previous = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { user: true },
+  });
+  if (!previous) throw new Error("Order not found");
+
+  const updated = await prisma.order.update({ where: { id: orderId }, data: { status } });
+
+  if (status === "SHIPPED" && previous.status !== "SHIPPED") {
+    const toEmail = previous.user?.email || previous.guestEmail;
+    try {
+      await sendShippingUpdateEmail(updated, toEmail);
+    } catch (emailError) {
+      console.error("[admin] shipping update email failed:", emailError);
+    }
+  }
 
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);

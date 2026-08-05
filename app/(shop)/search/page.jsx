@@ -3,7 +3,8 @@ import ProductGrid from "@/components/storefront/ProductGrid";
 import Pagination from "@/components/storefront/Pagination";
 
 export const metadata = {
-  title: "Search | RafiulAnamLLC",
+  title: "Search",
+  robots: { index: false },
 };
 
 export default async function SearchPage({ searchParams }) {

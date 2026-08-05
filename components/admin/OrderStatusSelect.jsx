@@ -29,6 +29,7 @@ export default function OrderStatusSelect({ orderId, status }) {
 
   return (
     <select
+      aria-label="Order status"
       value={value}
       disabled={isPending}
       onChange={handleChange}

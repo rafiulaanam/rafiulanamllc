@@ -211,12 +211,14 @@ export default function ProductForm({ categories, product }) {
               <input
                 required
                 placeholder="SKU"
+                aria-label={`SKU for variant ${index + 1}`}
                 value={variant.sku}
                 onChange={(e) => updateVariant(index, { sku: e.target.value })}
                 className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
               />
               <input
                 placeholder="Attributes e.g. size:M, color:Red"
+                aria-label={`Attributes for variant ${index + 1}`}
                 value={variant.attributesText}
                 onChange={(e) => updateVariant(index, { attributesText: e.target.value })}
                 className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm sm:col-span-2"
@@ -227,6 +229,7 @@ export default function ProductForm({ categories, product }) {
                 step="0.01"
                 min="0"
                 placeholder="Price"
+                aria-label={`Price for variant ${index + 1}`}
                 value={variant.price}
                 onChange={(e) => updateVariant(index, { price: e.target.value })}
                 className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
@@ -237,6 +240,7 @@ export default function ProductForm({ categories, product }) {
                   type="number"
                   min="0"
                   placeholder="Stock"
+                  aria-label={`Stock for variant ${index + 1}`}
                   value={variant.stockQuantity}
                   onChange={(e) => updateVariant(index, { stockQuantity: e.target.value })}
                   className="w-full rounded-lg border border-gray-300 px-2 py-1.5 text-sm"

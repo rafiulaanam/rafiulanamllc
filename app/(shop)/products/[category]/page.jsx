@@ -7,7 +7,12 @@ import Pagination from "@/components/storefront/Pagination";
 export async function generateMetadata({ params }) {
   const { category: categorySlug } = await params;
   const category = await getCategoryBySlug(categorySlug);
-  return { title: category ? `${category.name} | RafiulAnamLLC` : "Category not found" };
+  if (!category) return { title: "Category not found" };
+  return {
+    title: category.name,
+    description: `Shop ${category.name} at RafiulAnamLLC.`,
+    alternates: { canonical: `/products/${categorySlug}` },
+  };
 }
 
 export default async function CategoryPage({ params, searchParams }) {

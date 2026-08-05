@@ -56,6 +56,7 @@ export default function RegisterPage() {
           type="text"
           required
           placeholder="Full name"
+          aria-label="Full name"
           className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -64,6 +65,7 @@ export default function RegisterPage() {
           type="email"
           required
           placeholder="Email"
+          aria-label="Email"
           className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -73,6 +75,7 @@ export default function RegisterPage() {
           required
           minLength={8}
           placeholder="Password (min 8 characters)"
+          aria-label="Password (min 8 characters)"
           className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}

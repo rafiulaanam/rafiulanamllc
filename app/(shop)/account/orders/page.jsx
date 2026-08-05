@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { getOrdersForUser } from "@/lib/orders";
 import { formatPrice } from "@/lib/currency";
 
-export const metadata = { title: "Your orders | RafiulAnamLLC" };
+export const metadata = { title: "Your orders" };
 
 const STATUS_LABEL = {
   PENDING: "Pending",

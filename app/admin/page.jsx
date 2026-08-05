@@ -46,7 +46,7 @@ export default async function AdminDashboardPage() {
         <div className="rounded-xl border border-gray-200 bg-white p-4">
           <h2 className="mb-3 text-sm font-semibold">Low stock alerts</h2>
           {lowStockVariants.length === 0 ? (
-            <p className="text-sm text-gray-400">No variants below {LOW_STOCK_THRESHOLD} units.</p>
+            <p className="text-sm text-gray-500">No variants below {LOW_STOCK_THRESHOLD} units.</p>
           ) : (
             <ul className="flex flex-col gap-2 text-sm">
               {lowStockVariants.map((variant) => (

@@ -45,7 +45,13 @@ export default function CsvImportForm() {
         </ul>
       </div>
 
-      <input type="file" accept=".csv" onChange={handleFile} disabled={isPending} />
+      <input
+        type="file"
+        accept=".csv"
+        aria-label="CSV file to import"
+        onChange={handleFile}
+        disabled={isPending}
+      />
 
       {isPending && <p className="text-sm text-gray-500">Importing...</p>}
 

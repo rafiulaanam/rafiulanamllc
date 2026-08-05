@@ -43,6 +43,7 @@ export default function LoginPage() {
           type="email"
           required
           placeholder="Email"
+          aria-label="Email"
           className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -51,6 +52,7 @@ export default function LoginPage() {
           type="password"
           required
           placeholder="Password"
+          aria-label="Password"
           className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}

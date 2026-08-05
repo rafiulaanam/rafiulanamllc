@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: { template: "%s | Admin", default: "Admin" },
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminLayout({ children }) {
   const session = await auth();

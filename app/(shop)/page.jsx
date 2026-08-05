@@ -2,6 +2,11 @@ import Link from "next/link";
 import { getFeaturedProducts, getCategories } from "@/lib/catalog";
 import ProductGrid from "@/components/storefront/ProductGrid";
 
+export const metadata = {
+  title: "Home",
+  alternates: { canonical: "/" },
+};
+
 export default async function HomePage() {
   const [featured, categories] = await Promise.all([getFeaturedProducts(), getCategories()]);
 

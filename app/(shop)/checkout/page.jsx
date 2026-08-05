@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 
-export const metadata = { title: "Checkout | RafiulAnamLLC" };
+export const metadata = { title: "Checkout", robots: { index: false } };
 
 export default async function CheckoutPage() {
   const [{ items, subtotal }, session] = await Promise.all([getCartSummary(), auth()]);

@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import AddressCard from "@/components/account/AddressCard";
 import AddressForm from "@/components/account/AddressForm";
 
-export const metadata = { title: "Your addresses | RafiulAnamLLC" };
+export const metadata = { title: "Your addresses" };
 
 export default async function AddressesPage() {
   const session = await auth();

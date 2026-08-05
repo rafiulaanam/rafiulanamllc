@@ -2,6 +2,8 @@ import Link from "next/link";
 import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
+export const metadata = { title: "Your account" };
+
 export default async function AccountPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
