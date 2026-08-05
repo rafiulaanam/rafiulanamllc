@@ -4,7 +4,7 @@ Multi-category e-commerce storefront + admin panel, built with Next.js (App Rout
 
 ## Getting started
 
-1. Copy `.env.example` to `.env` and fill in real values (never commit `.env`).
+1. Copy `.env.example` to `.env` and fill in real values (never commit `.env`). At minimum you need `DATABASE_URL` and `NEXTAUTH_SECRET` (generate one with `npx auth secret`) to run the app at all; Stripe keys are needed for checkout, Resend for emails.
 2. Install dependencies:
    ```bash
    npm install
@@ -13,7 +13,7 @@ Multi-category e-commerce storefront + admin panel, built with Next.js (App Rout
    ```bash
    npx prisma migrate dev
    ```
-4. (Optional) Seed an admin user for local testing:
+4. Seed an admin user for local testing:
    ```bash
    SEED_ADMIN_EMAIL=admin@example.com SEED_ADMIN_PASSWORD=changeme123 npx prisma db seed
    ```
@@ -21,6 +21,23 @@ Multi-category e-commerce storefront + admin panel, built with Next.js (App Rout
    ```bash
    npm run dev
    ```
+   The app is now at http://localhost:3000, with an admin panel at `/admin` (log in with the seeded credentials above).
+6. **To test checkout**, Stripe needs to deliver a webhook to your machine. Install the [Stripe CLI](https://docs.stripe.com/stripe-cli), then in a second terminal:
+   ```bash
+   stripe login
+   stripe listen --forward-to localhost:3000/api/webhooks/stripe
+   ```
+   Copy the `whsec_...` signing secret it prints into your `.env` as `STRIPE_WEBHOOK_SECRET`, and restart `npm run dev`. Use test card `4242 4242 4242 4242`, any future expiry, any CVC. Watch the `stripe listen` terminal — you should see `payment_intent.succeeded` come through, and the order should appear on `/checkout/success` and in `/account/orders` / `/admin/orders` within a couple seconds.
+
+## Testing the storefront end to end
+
+1. **Browse & search**: add a category and a product (with at least one variant) at `/admin/categories` and `/admin/products/new`, then confirm it shows up on `/products`, its category page, and `/search?q=...`.
+2. **Cart**: add to cart as a guest (no login) — it should persist across a page reload (cookie-backed). Adjust quantity and remove items on `/cart`.
+3. **Guest checkout**: from `/cart`, go to `/checkout`, fill the address form, pay with the Stripe test card. Confirm the order shows up in `/admin/orders` with status `PAID`, and that stock decremented on the product's variant.
+4. **Account + cart merge**: add something to cart as a guest, then register a new account — the cart should carry over instead of resetting to empty.
+5. **Admin order flow**: on `/admin/orders/[id]`, change the status to `SHIPPED` — it should immediately reflect on the customer's `/account/orders`.
+6. **CSV import**: try `/admin/products/import` with a small CSV (columns documented on that page) to bulk-load products.
+7. **Rate limiting**: submitting the register form more than 10 times in 15 minutes from the same IP should start returning "Too many attempts" — this is expected, not a bug.
 
 ## Build status
 
