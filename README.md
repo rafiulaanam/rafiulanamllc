@@ -11,9 +11,13 @@ Multi-category e-commerce storefront + admin panel, built with Next.js (App Rout
    ```
 3. Push the Prisma schema to your Postgres database:
    ```bash
-   npx prisma migrate dev --name init
+   npx prisma migrate dev
    ```
-4. Run the dev server:
+4. (Optional) Seed an admin user for local testing:
+   ```bash
+   SEED_ADMIN_EMAIL=admin@example.com SEED_ADMIN_PASSWORD=changeme123 npx prisma db seed
+   ```
+5. Run the dev server:
    ```bash
    npm run dev
    ```
@@ -22,8 +26,8 @@ Multi-category e-commerce storefront + admin panel, built with Next.js (App Rout
 
 This project is being built milestone by milestone per the PRD:
 
-1. **Project setup** — Next.js + Tailwind + Prisma schema + auth scaffolding ✅ (this commit)
-2. Catalog — categories, products, admin CRUD, storefront browse/search
+1. **Project setup** — Next.js + Tailwind + Prisma schema + auth scaffolding ✅
+2. **Catalog** — categories, products (with variants), admin CRUD, CSV bulk import, storefront browse/category/search/detail pages ✅ (this commit)
 3. Cart
 4. Checkout & payments (Stripe)
 5. Accounts — order history, address book, password reset
