@@ -29,20 +29,20 @@ export default function AddressCard({ address }) {
 
   if (editing) {
     return (
-      <div className="rounded-xl border border-gray-200 p-4">
+      <div className="rounded-xl border border-sand p-4">
         <AddressForm address={address} onDone={() => setEditing(false)} />
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 p-4">
+    <div className="rounded-xl border border-sand p-4">
       <div className="flex items-start justify-between">
-        <div className="text-sm text-gray-700">
-          <p className="font-medium text-gray-900">
+        <div className="text-sm text-stone">
+          <p className="font-medium text-ink">
             {address.fullName}
             {address.isDefault && (
-              <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+              <span className="ml-2 rounded-full bg-sand px-2 py-0.5 text-xs text-stone">
                 Default
               </span>
             )}
@@ -57,7 +57,7 @@ export default function AddressCard({ address }) {
         </div>
       </div>
       <div className="mt-3 flex gap-3 text-sm">
-        <button type="button" onClick={() => setEditing(true)} className="text-gray-600 hover:text-gray-900">
+        <button type="button" onClick={() => setEditing(true)} className="text-stone transition hover:text-clay">
           Edit
         </button>
         {!address.isDefault && (
@@ -65,7 +65,7 @@ export default function AddressCard({ address }) {
             type="button"
             disabled={isPending}
             onClick={handleSetDefault}
-            className="text-gray-600 hover:text-gray-900 disabled:opacity-50"
+            className="text-stone transition hover:text-clay disabled:opacity-50"
           >
             Set as default
           </button>
@@ -74,7 +74,7 @@ export default function AddressCard({ address }) {
           type="button"
           disabled={isPending}
           onClick={handleDelete}
-          className="text-red-600 hover:text-red-800 disabled:opacity-50"
+          className="text-clay hover:text-clay-dark disabled:opacity-50"
         >
           Delete
         </button>

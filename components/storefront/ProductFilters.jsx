@@ -1,11 +1,11 @@
 export default function ProductFilters({ action, hidden = {}, values = {} }) {
   return (
-    <form action={action} method="GET" className="flex flex-wrap items-end gap-3 border-b border-gray-200 pb-4">
+    <form action={action} method="GET" className="flex flex-wrap items-end gap-3 border-b border-sand pb-4">
       {Object.entries(hidden).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={value} />
       ))}
 
-      <label className="flex flex-col text-xs text-gray-500">
+      <label className="flex flex-col text-xs text-stone">
         Min price
         <input
           type="number"
@@ -13,11 +13,11 @@ export default function ProductFilters({ action, hidden = {}, values = {} }) {
           min="0"
           step="0.01"
           defaultValue={values.minPrice ?? ""}
-          className="mt-1 w-24 rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-gray-500"
+          className="mt-1 w-24 rounded-md border border-sand bg-white px-2 py-1.5 text-sm text-ink outline-none transition focus:border-clay"
         />
       </label>
 
-      <label className="flex flex-col text-xs text-gray-500">
+      <label className="flex flex-col text-xs text-stone">
         Max price
         <input
           type="number"
@@ -25,16 +25,16 @@ export default function ProductFilters({ action, hidden = {}, values = {} }) {
           min="0"
           step="0.01"
           defaultValue={values.maxPrice ?? ""}
-          className="mt-1 w-24 rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-gray-500"
+          className="mt-1 w-24 rounded-md border border-sand bg-white px-2 py-1.5 text-sm text-ink outline-none transition focus:border-clay"
         />
       </label>
 
-      <label className="flex flex-col text-xs text-gray-500">
+      <label className="flex flex-col text-xs text-stone">
         Sort by
         <select
           name="sort"
           defaultValue={values.sort ?? "newest"}
-          className="mt-1 rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-gray-500"
+          className="mt-1 rounded-md border border-sand bg-white px-2 py-1.5 text-sm text-ink outline-none transition focus:border-clay"
         >
           <option value="newest">Newest</option>
           <option value="price-asc">Price: low to high</option>
@@ -44,7 +44,7 @@ export default function ProductFilters({ action, hidden = {}, values = {} }) {
 
       <button
         type="submit"
-        className="rounded-lg bg-gray-900 px-4 py-1.5 text-sm font-medium text-white"
+        className="rounded-lg bg-ink px-4 py-1.5 text-sm font-medium text-canvas transition hover:bg-clay"
       >
         Apply
       </button>

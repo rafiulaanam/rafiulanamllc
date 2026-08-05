@@ -18,7 +18,7 @@ export default async function SearchPage({ searchParams }) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-8">
-      <h1 className="mb-4 text-2xl font-semibold">
+      <h1 className="font-display mb-4 text-2xl text-ink">
         {q ? `Search results for "${q}"` : "Search"}
       </h1>
       {q ? (
@@ -31,7 +31,7 @@ export default async function SearchPage({ searchParams }) {
           />
         </>
       ) : (
-        <p className="text-gray-500">Enter a search term to find products.</p>
+        <p className="text-stone">Enter a search term to find products.</p>
       )}
     </main>
   );

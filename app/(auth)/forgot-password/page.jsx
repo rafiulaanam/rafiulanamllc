@@ -13,9 +13,9 @@ export default function ForgotPasswordPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold">Reset password</h1>
+      <h1 className="font-display mb-6 text-xl text-ink">Reset password</h1>
       {submitted ? (
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-stone">
           If an account exists for that email, a reset link will be sent shortly.
         </p>
       ) : (
@@ -25,11 +25,11 @@ export default function ForgotPasswordPage() {
             required
             placeholder="Email"
             aria-label="Email"
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
+            className="rounded-md border border-sand px-3 py-2 text-sm outline-none transition focus:border-clay"
           />
           <button
             type="submit"
-            className="rounded-lg bg-gray-900 py-2 text-sm font-medium text-white"
+            className="rounded-lg bg-ink py-2 text-sm font-medium text-canvas transition hover:bg-clay"
           >
             Send reset link
           </button>

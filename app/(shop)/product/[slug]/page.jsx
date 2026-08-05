@@ -50,8 +50,8 @@ export default async function ProductDetailPage({ params }) {
         // containing "</script>" could otherwise break out of this tag.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-100">
+      <div className="grid gap-10 md:grid-cols-2">
+        <div className="relative aspect-square overflow-hidden rounded-lg bg-canvas">
           {product.images[0] ? (
             <Image
               src={product.images[0]}
@@ -62,17 +62,17 @@ export default async function ProductDetailPage({ params }) {
               priority
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-gray-500">No image</div>
+            <div className="flex h-full items-center justify-center text-stone">No image</div>
           )}
         </div>
 
         <div>
-          <p className="text-sm text-gray-500">{product.category?.name}</p>
-          <h1 className="mt-1 text-2xl font-semibold">{product.name}</h1>
-          <p className="mt-4 whitespace-pre-line text-gray-600">{product.description}</p>
+          <p className="text-sm text-stone">{product.category?.name}</p>
+          <h1 className="font-display mt-1 text-3xl text-ink">{product.name}</h1>
+          <p className="mt-4 whitespace-pre-line text-stone">{product.description}</p>
 
           <div className="mt-6">
-            <VariantSelector variants={product.variants} />
+            <VariantSelector variants={product.variants} productName={product.name} />
           </div>
         </div>
       </div>

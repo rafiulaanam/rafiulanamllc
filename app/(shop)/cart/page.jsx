@@ -10,12 +10,15 @@ export default async function CartPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-8">
-      <h1 className="mb-6 text-2xl font-semibold">Your cart</h1>
+      <h1 className="font-display mb-6 text-2xl text-ink">Your cart</h1>
 
       {items.length === 0 ? (
         <div className="py-16 text-center">
-          <p className="text-gray-500">Your cart is empty.</p>
-          <Link href="/products" className="mt-4 inline-block text-sm font-medium underline">
+          <p className="text-stone">Your cart is empty.</p>
+          <Link
+            href="/products"
+            className="mt-4 inline-block text-sm font-medium text-clay underline underline-offset-4"
+          >
             Continue shopping
           </Link>
         </div>
@@ -27,15 +30,15 @@ export default async function CartPage() {
             ))}
           </div>
 
-          <div className="h-fit rounded-xl border border-gray-200 p-4">
-            <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="h-fit rounded-lg border border-sand bg-white p-4">
+            <div className="flex items-center justify-between text-sm text-stone">
               <span>Subtotal</span>
-              <span className="font-semibold text-gray-900">{formatPrice(subtotal)}</span>
+              <span className="font-semibold text-ink">{formatPrice(subtotal)}</span>
             </div>
-            <p className="mt-1 text-xs text-gray-500">Free shipping. No tax at this time.</p>
+            <p className="mt-1 text-xs text-stone">Free shipping. No tax at this time.</p>
             <Link
               href="/checkout"
-              className="mt-4 block w-full rounded-lg bg-gray-900 py-2.5 text-center text-sm font-medium text-white"
+              className="mt-4 block w-full rounded-lg bg-ink py-2.5 text-center text-sm font-medium text-canvas transition hover:bg-clay"
             >
               Proceed to checkout
             </Link>

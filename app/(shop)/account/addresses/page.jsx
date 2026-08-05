@@ -18,10 +18,10 @@ export default async function AddressesPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-8">
-      <Link href="/account" className="text-sm text-gray-500 hover:underline">
+      <Link href="/account" className="text-sm text-stone transition hover:text-clay">
         ← Back to account
       </Link>
-      <h1 className="mb-6 mt-2 text-2xl font-semibold">Your addresses</h1>
+      <h1 className="mb-6 mt-2 font-display text-2xl text-ink">Your addresses</h1>
 
       <div className="flex flex-col gap-4">
         {addresses.map((address) => (
@@ -29,7 +29,7 @@ export default async function AddressesPage() {
         ))}
       </div>
 
-      <div className="mt-6 rounded-xl border border-gray-200 p-4">
+      <div className="mt-6 rounded-xl border border-sand p-4">
         <h2 className="mb-3 text-sm font-semibold">Add a new address</h2>
         <AddressForm />
       </div>

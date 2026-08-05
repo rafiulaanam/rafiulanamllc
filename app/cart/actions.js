@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { CART_COOKIE_NAME, getCartIdentity } from "@/lib/cart";
+import { CART_COOKIE_NAME, getCartIdentity, getCartSummary } from "@/lib/cart";
 
 // Revalidate the cart page plus the shared shop layout, since the cart
 // item count badge in the navbar is rendered there on every storefront page.
@@ -56,6 +56,12 @@ async function assertOwnsCartItem(itemId) {
 
   if (!owns) throw new Error("Not authorized");
   return item;
+}
+
+// Lets client components (the cart drawer, the navbar badge) pull a fresh
+// cart snapshot without a full page navigation/refresh.
+export async function getCartSummaryAction() {
+  return getCartSummary();
 }
 
 export async function addToCart(productVariantId, quantity = 1) {

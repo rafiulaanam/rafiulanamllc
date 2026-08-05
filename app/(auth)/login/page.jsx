@@ -37,14 +37,14 @@ export default function LoginPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold">Log in</h1>
+      <h1 className="font-display mb-6 text-xl text-ink">Log in</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="email"
           required
           placeholder="Email"
           aria-label="Email"
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
+          className="rounded-md border border-sand px-3 py-2 text-sm outline-none transition focus:border-clay"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
@@ -53,24 +53,24 @@ export default function LoginPage() {
           required
           placeholder="Password"
           aria-label="Password"
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
+          className="rounded-md border border-sand px-3 py-2 text-sm outline-none transition focus:border-clay"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-clay">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-gray-900 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-lg bg-ink py-2 text-sm font-medium text-canvas transition hover:bg-clay disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Log in"}
         </button>
       </form>
-      <div className="mt-4 flex justify-between text-sm text-gray-500">
-        <Link href="/forgot-password" className="hover:underline">
+      <div className="mt-4 flex justify-between text-sm text-stone">
+        <Link href="/forgot-password" className="hover:text-clay">
           Forgot password?
         </Link>
-        <Link href="/register" className="hover:underline">
+        <Link href="/register" className="hover:text-clay">
           Create account
         </Link>
       </div>

@@ -1,15 +1,18 @@
 import ProductCard from "@/components/storefront/ProductCard";
+import { StaggerGrid, StaggerItem } from "@/components/ui/motion";
 
 export default function ProductGrid({ products }) {
   if (!products.length) {
-    return <p className="py-16 text-center text-gray-500">No products found.</p>;
+    return <p className="py-16 text-center text-stone">No products found.</p>;
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    <StaggerGrid className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <StaggerItem key={product.id}>
+          <ProductCard product={product} />
+        </StaggerItem>
       ))}
-    </div>
+    </StaggerGrid>
   );
 }

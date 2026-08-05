@@ -2,6 +2,24 @@
 
 Multi-category e-commerce storefront + admin panel, built with Next.js (App Router), Tailwind CSS, Prisma/Postgres, and NextAuth (Auth.js). See the PRD for full scope.
 
+## Design system — "Warm Ceramic"
+
+The storefront (not the admin panel) follows a deliberate design system rather than default Tailwind styling:
+
+| Token | Hex | Use |
+|---|---|---|
+| `ink` | `#1C1B19` | Primary text, headings |
+| `canvas` | `#F7F4EF` | Page background |
+| `clay` | `#B5502F` | Primary accent — CTAs, links, active states |
+| `clay-dark` | `#96411F` | Hover/pressed state for clay |
+| `moss` | `#4B5B45` | Success states (e.g. the order-confirmation check) |
+| `sand` | `#E7E0D4` | Borders, dividers, subtle surfaces |
+| `stone` | `#6E6860` | Secondary/muted text |
+
+All defined in `app/globals.css` via Tailwind v4's `@theme` block, so `bg-clay`, `text-stone`, etc. are real utilities. Type pairing is **Fraunces** (display, `font-display`) + **Inter** (body/UI, the default `font-sans`), loaded in `app/layout.jsx`.
+
+Motion uses the `motion` package (Framer Motion's successor) — `components/ui/motion.jsx` has the shared `FadeIn`/`StaggerGrid`/`StaggerItem` primitives used for scroll-reveal entrances; product cards crossfade to a second image (or scale) on hover; add-to-cart morphs the button to a checkmark and opens the cart drawer; checkout steps slide between address and payment. Every animation is wrapped by a single `MotionConfig reducedMotion="user"` in `app/providers.jsx`, so `prefers-reduced-motion` is respected globally without per-component logic (verified — see Pre-launch checklist).
+
 ## Getting started
 
 1. Copy `.env.example` to `.env` and fill in real values (never commit `.env`). At minimum you need `DATABASE_URL` and `NEXTAUTH_SECRET` (generate one with `npx auth secret`) to run the app at all; Stripe keys are needed for checkout, Resend for emails.
@@ -50,7 +68,11 @@ This project is being built milestone by milestone per the PRD:
 5. **Accounts** — order history, address book (with checkout prefill + "save this address") ✅ (password reset UI is still a stub pending an email provider)
 6. **Admin dashboard** — order list/filter/status updates, customers, sales (30d) + low-stock alerts ✅
 7. **Polish** — SEO (sitemap, robots.txt, per-page metadata, canonical URLs, noindex on account/admin/cart/checkout), fixed missing /about and /contact pages, transactional emails (order confirmation + shipping update via Resend), custom 404/error pages, route-level loading skeletons, and an accessibility pass (form labels, heading order, color contrast) verified with axe-core ✅
-8. **Pre-launch** — env var audit, security review, seed-data safety ✅ (this commit)
+8. **Pre-launch** — env var audit, security review, seed-data safety ✅
+
+## Design pass (post-PRD addendum)
+
+A follow-up brief asked for a considered, premium visual identity instead of default-looking Tailwind components. Delivered: the "Warm Ceramic" design system above, a slide-in cart drawer (`components/storefront/CartDrawer.jsx`) with an add-to-cart micro-interaction and live badge count, scroll-reveal entrances and staggered product-grid animation, product-card hover crossfade, and animated checkout step transitions — across the full storefront (home, browse, product detail, cart, checkout, auth, account, about/contact, 404/error). The admin panel was intentionally left as-is; the brief scoped this to the customer-facing storefront.
 
 ## Pre-launch checklist
 
