@@ -6,6 +6,7 @@ const links = [
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/customers", label: "Customers" },
+  { href: "/admin/webhooks", label: "Webhook activity" },
 ];
 
 export default function AdminSidebar() {

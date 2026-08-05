@@ -205,6 +205,20 @@ model OrderItem {
   productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
 }
 
+// Durable, queryable record of every webhook delivery received — a
+// platform's ephemeral function logs aren't reliable enough on their own
+// for diagnosing "payment succeeded but no order appeared" reports.
+model WebhookEvent {
+  id              String   @id @default(cuid())
+  provider        String   @default("stripe")
+  eventType       String
+  stripeEventId   String?  @unique
+  paymentIntentId String?
+  status          String
+  message         String?
+  createdAt       DateTime @default(now())
+}
+
 model Wishlist {
   id        String   @id @default(cuid())
   userId    String
