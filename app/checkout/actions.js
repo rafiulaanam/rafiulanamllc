@@ -34,17 +34,31 @@ export async function createCheckoutIntent(addressInput) {
 
   const identity = await getCartIdentity();
 
+  // Keep the address snapshot free of transient form fields (email,
+  // saveAddress) — those are handled separately below.
+  const { email, saveAddress, ...shippingAddress } = address;
+
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(total * 100),
     currency: "usd",
-    receipt_email: address.email,
+    receipt_email: email,
     metadata: {
       cartId: cart.id,
       userId: identity.userId ?? "",
-      guestEmail: identity.userId ? "" : address.email,
-      shippingAddress: JSON.stringify(address),
+      guestEmail: identity.userId ? "" : email,
+      shippingAddress: JSON.stringify(shippingAddress),
     },
   });
+
+  if (identity.userId && saveAddress) {
+    const hasExistingAddress = await prisma.address.findFirst({
+      where: { userId: identity.userId },
+      select: { id: true },
+    });
+    await prisma.address.create({
+      data: { userId: identity.userId, ...shippingAddress, isDefault: !hasExistingAddress },
+    });
+  }
 
   return {
     clientSecret: paymentIntent.client_secret,

@@ -20,8 +20,20 @@ export async function POST(request) {
     return NextResponse.json({ error: `Webhook signature verification failed` }, { status: 400 });
   }
 
-  if (event.type === "payment_intent.succeeded") {
-    await handlePaymentSucceeded(event.data.object);
+  switch (event.type) {
+    case "payment_intent.succeeded":
+      await handlePaymentSucceeded(event.data.object);
+      break;
+    case "payment_intent.payment_failed":
+    case "payment_intent.canceled":
+      // No order to create — the checkout page never created one either.
+      console.warn(`[stripe webhook] ${event.type}: ${event.data.object.id}`);
+      break;
+    default:
+      // Other payment_intent.* events (processing, requires_action, etc.) are
+      // expected since the endpoint is subscribed to all of them, but only
+      // "succeeded" results in an order.
+      break;
   }
 
   return NextResponse.json({ received: true });

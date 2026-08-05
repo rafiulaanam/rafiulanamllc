@@ -9,7 +9,15 @@ import OrderSummary from "@/components/checkout/OrderSummary";
 import AddressForm from "@/components/checkout/AddressForm";
 import PaymentStep from "@/components/checkout/PaymentStep";
 
-export default function CheckoutForm({ items, subtotal, publishableKey, defaultEmail, defaultName }) {
+export default function CheckoutForm({
+  items,
+  subtotal,
+  publishableKey,
+  defaultEmail,
+  defaultName,
+  defaultAddress,
+  isLoggedIn,
+}) {
   const stripePromise = useMemo(
     () => (publishableKey ? loadStripe(publishableKey) : null),
     [publishableKey]
@@ -51,6 +59,8 @@ export default function CheckoutForm({ items, subtotal, publishableKey, defaultE
         <AddressForm
           defaultEmail={defaultEmail}
           defaultName={defaultName}
+          defaultAddress={defaultAddress}
+          isLoggedIn={isLoggedIn}
           isSubmitting={isSubmitting}
           onSubmit={handleAddressSubmit}
         />
