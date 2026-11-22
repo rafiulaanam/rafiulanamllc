@@ -1,0 +1,72 @@
+{
+  "name": "rafiul-anam-llc",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test",
+    "dev": "next dev",
+    "predev": "prisma generate",
+    "build": "next build",
+    "prebuild": "prisma generate",
+    "start": "next start",
+    "lint": "eslint .",
+    "check": "npm run typecheck && npm run lint && npm run test:db && npm test",
+    "typecheck": "next typegen && tsc --noEmit",
+    "pretypecheck": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:import": "node prisma/import-legacy.ts",
+    "db:link-admin": "node prisma/link-administrator.ts",
+    "db:purge-media": "node prisma/purge-media.ts",
+    "test:db": "node --test tests/prisma-database.test.mjs"
+  },
+  "type": "module",
+  "dependencies": {
+    "@clerk/nextjs": "7.10.7",
+    "@hookform/resolvers": "^7.0.8",
+    "@prisma/adapter-neon": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "@radix-ui/react-slot": "^1.5.0",
+    "@tailwindcss/postcss": "^4.3.5",
+    "cloudinary": "2.11.0",
+    "clsx": "^2.1.1",
+    "geist": "^1.9.2",
+    "lucide-react": "^1.77.0",
+    "motion": "^14.14.0",
+    "next": "15.5.29",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-hook-form": "^7.92.0",
+    "sharp": "^0.35.5",
+    "tailwind-merge": "^3.7.1",
+    "tailwindcss": "^4.3.5",
+    "three": "0.187.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.17",
+    "@eslint/eslintrc": "3.3.7",
+    "@next/env": "15.5.29",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "0.187.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "15.5.29",
+    "prisma": "7.10.1",
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "effect": "3.22.5"
+    }
+  },
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.10.1": true,
+    "prisma@7.10.1": true
+  }
+}

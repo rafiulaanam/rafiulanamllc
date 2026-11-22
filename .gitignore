@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.next-fixture/
+.next-unconfigured/
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts
+.vercel/
+playwright-report/
+test-results/
+src/generated/prisma/
