@@ -17,6 +17,7 @@ export function ProductEditor({product,categories}: {product?:Product;categories
     <div className="form-pair"><Field name="price" label="Price (optional)" type="number" step=".01" min={0} value={product?.price} optional /><Field name="currency" label="ISO currency" value={product?.currency ?? 'USD'} max={3} /></div>
     <ImageField name="image" label="Main product image" path={product?.image} /><Field name="image_alt" label="Main image description" value={product?.image_alt} max={240} optional />
     <div className="form-pair"><Flag name="featured" label="Feature on the website" checked={product?.featured} /><Flag name="published" label="Publish to catalogue" checked={product?.published} /></div>
+    <p className="muted">To save a draft without an image, leave the file field empty and keep publishing unchecked. Published products need a category, a main image, and an image description.</p>
     {!categories.length && <p className="muted">Create a <Link className="text-link" href="/admin/categories">category</Link> before publishing.</p>}
   </AdminForm>;
 }

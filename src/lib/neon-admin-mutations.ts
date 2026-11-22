@@ -1,5 +1,6 @@
 import 'server-only';
 import type { Prisma, PrismaClient } from '@/generated/prisma/client';
+import { settings } from './content';
 import {
   AdminRecordError, parse, idSchema, productSchema, businessSchema, settingsSchema, ceoSchema,
   categorySchema, socialSchema, inquirySchema, gallerySchema,
@@ -120,9 +121,12 @@ export async function mutateNeonAdminContent(db: PrismaClient, actorId: string, 
         const path = await upload(column,isCeo ? 'leadership' : 'logos');
         return await save(async tx => {
           const where = {singleton:true};
-          const previous = requiresRecord(await tx.siteSetting.findUnique({where}));
-          const row = await tx.siteSetting.update({where,data:{...fields,...(path && {[column]:path})}});
-          return {id:row.id,retired:path ? [previous[column]] : []};
+          const previous = path ? await tx.siteSetting.findUnique({where,select:{brand_logo:true,ceo_portrait:true}}) : null;
+          const data = {...fields,...(path && {[column]:path})};
+          const row = await tx.siteSetting.upsert({
+            where, update:data, create:{...settings,ceo_portrait:null,...data},
+          });
+          return {id:row.id,retired:previous ? [previous[column]] : []};
         });
       }
       case 'social': {

@@ -1,5 +1,6 @@
 import 'server-only';
 import type { PrismaClient, SocialScope } from '@/generated/prisma/client';
+import { settings } from './content';
 import { datedRow, inquiryRow, productOrder, productRow } from './neon-data';
 
 export async function neonAdminOverview(db: PrismaClient) {
@@ -32,10 +33,11 @@ export async function neonAdminInquiries(db: PrismaClient, skip: number, take: n
 }
 
 export async function neonAdminSettings(db: PrismaClient, scope: SocialScope) {
-  return Promise.all([
-    db.siteSetting.findUniqueOrThrow({where:{singleton:true}}),
+  const [row, links] = await Promise.all([
+    db.siteSetting.findUnique({where:{singleton:true}}),
     db.socialLink.findMany({where:{scope},orderBy:[{display_order:'asc'},{label:'asc'}]}),
   ]);
+  return [row ? {...row, ceo_portrait:row.ceo_portrait ?? settings.ceo_portrait} : settings, links] as const;
 }
 
 export async function neonAdminProduct(db: PrismaClient, id: string) {

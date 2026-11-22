@@ -1,4 +1,68 @@
-.admin-auth { min-height: 100dvh; }
+.admin-auth {
+  min-height: 100dvh;
+  background: #f5f7fb;
+  color: #10203a;
+}
+
+.admin-auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  min-height: 3.75rem;
+  padding: .65rem clamp(.75rem, 3vw, 2rem);
+  background: #101d33;
+  color: #fff;
+}
+
+.admin-auth-header .brand { gap: .5rem; font-size: .78rem; }
+.admin-auth-header .brand-logo { width: 2rem; height: 2rem; }
+.admin-auth-header > a:last-child {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: .2rem;
+  color: #d4e2fb;
+  font-size: .8rem;
+}
+
+.admin-auth-header > a:last-child:hover { text-decoration: underline; }
+.admin-auth-main { padding: clamp(1rem, 5svh, 3.5rem) .75rem 1rem; }
+.admin-auth-card {
+  width: min(100%, 25rem);
+  margin-inline: auto;
+  padding: clamp(1rem, 4vw, 1.65rem);
+  border: 1px solid #e2e8f1;
+  border-radius: .9rem;
+  background: #fff;
+  box-shadow: 0 8px 30px #10203a0a;
+}
+
+.admin-auth-card :is(h1, .admin-auth-clerk-title) {
+  color: #10203a;
+  font-size: 1.5rem;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+}
+
+.admin-auth-card > p, .admin-auth-loading > p { margin-top: .4rem; color: #53627a; font-size: .875rem; }
+.admin-auth-card > button { margin-top: 1rem; }
+.admin-auth-card .admin-auth-clerk,
+.admin-auth-card .admin-auth-clerk-box { width: 100%; max-width: none; background: transparent; box-shadow: none; }
+.admin-auth-card .admin-auth-clerk-card { width: 100%; padding: 0; background: transparent; box-shadow: none; }
+.admin-auth-card .admin-auth-clerk-subtitle { margin: 0; color: #53627a; font-size: .875rem; }
+.admin-auth-card .admin-auth-clerk-footer { background: transparent; }
+.admin-auth-card .cl-signIn-start .cl-footerAction__signIn { display: none; }
+.admin-auth-loading { min-height: 12rem; text-align: center; }
+.admin-auth-placeholder {
+  height: 2.45rem;
+  margin-top: .9rem;
+  border: 1px solid #e2e8f1;
+  border-radius: .45rem;
+  background: #f5f7fb;
+}
+.admin-auth-placeholder-button { border-color: #e1e9f9; background: #eaf1ff; }
 
 .admin-workspace {
   --workspace-rail: 15.75rem;
