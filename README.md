@@ -1,96 +1,105 @@
-# RafiulAnamLLC — Online Retail Store
+# RAFIUL ANAM LLC
 
-Multi-category e-commerce storefront + admin panel, built with Next.js (App Router), Tailwind CSS, Prisma/Postgres, and NextAuth (Auth.js). See the PRD for full scope.
+Corporate website for Amazon e-commerce, ANAMIGO Fleet, ANAMSOFT, and ANAMCART. The site uses Next.js 15 App Router, React 19, TypeScript, Tailwind CSS, shadcn-style components, and Neon PostgreSQL, Prisma, Clerk, and Cloudinary. The homepage loads its Three.js Earth on demand and uses Motion for the hero and business explorer.
 
-## Design system — "Warm Ceramic"
+## Local development
 
-The storefront (not the admin panel) follows a deliberate design system rather than default Tailwind styling:
+Requires Node.js 22.18 or later and npm.
 
-| Token | Hex | Use |
-|---|---|---|
-| `ink` | `#1C1B19` | Primary text, headings |
-| `canvas` | `#F7F4EF` | Page background |
-| `clay` | `#B5502F` | Primary accent — CTAs, links, active states |
-| `clay-dark` | `#96411F` | Hover/pressed state for clay |
-| `moss` | `#4B5B45` | Success states (e.g. the order-confirmation check) |
-| `sand` | `#E7E0D4` | Borders, dividers, subtle surfaces |
-| `stone` | `#6E6860` | Secondary/muted text |
+```sh
+npm ci
+cp .env.example .env.local
+npm run dev
+```
 
-All defined in `app/globals.css` via Tailwind v4's `@theme` block, so `bg-clay`, `text-stone`, etc. are real utilities. Type pairing is **Fraunces** (display, `font-display`) + **Inter** (body/UI, the default `font-sans`), loaded in `app/layout.jsx`.
+Open http://localhost:3000. With no database configuration, the site displays the supplied corporate and business copy, an empty product catalogue, and clear availability messages for inquiries and administration.
 
-Motion uses the `motion` package (Framer Motion's successor) — `components/ui/motion.jsx` has the shared `FadeIn`/`StaggerGrid`/`StaggerItem` primitives used for scroll-reveal entrances; product cards crossfade to a second image (or scale) on hover; add-to-cart morphs the button to a checkmark and opens the cart drawer; checkout steps slide between address and payment. Every animation is wrapped by a single `MotionConfig reducedMotion="user"` in `app/providers.jsx`, so `prefers-reduced-motion` is respected globally without per-component logic (verified — see Pre-launch checklist).
+## Neon, Prisma, Clerk, and Cloudinary migration
 
-## Getting started
+Prisma handles all application database access. Use this procedure to transfer the retained source database and media into Neon and Cloudinary. Validate the import and provider integrations in a preview deployment.
 
-1. Copy `.env.example` to `.env` and fill in real values (never commit `.env`). At minimum you need `DATABASE_URL` and `NEXTAUTH_SECRET` (generate one with `npx auth secret`) to run the app at all; Stripe keys are needed for checkout, Resend for emails.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Push the Prisma schema to your Postgres database:
-   ```bash
-   npx prisma migrate dev
-   ```
-4. Seed an admin user for local testing:
-   ```bash
-   SEED_ADMIN_EMAIL=admin@example.com SEED_ADMIN_PASSWORD=changeme123 npx prisma db seed
-   ```
-5. Run the dev server:
-   ```bash
-   npm run dev
-   ```
-   The app is now at http://localhost:3000, with an admin panel at `/admin` (log in with the seeded credentials above).
-6. **To test checkout**, Stripe needs to deliver a webhook to your machine. Install the [Stripe CLI](https://docs.stripe.com/stripe-cli), then in a second terminal:
-   ```bash
-   stripe login
-   stripe listen --forward-to localhost:3000/api/webhooks/stripe
-   ```
-   Copy the `whsec_...` signing secret it prints into your `.env` as `STRIPE_WEBHOOK_SECRET`, and restart `npm run dev`. Use test card `4242 4242 4242 4242`, any future expiry, any CVC. Watch the `stripe listen` terminal — you should see `payment_intent.succeeded` come through, and the order should appear on `/checkout/success` and in `/account/orders` / `/admin/orders` within a couple seconds.
+1. Create an empty Neon staging branch. Set the pooled TLS URL in `DATABASE_URL` and the direct TLS URL in `DATABASE_URL_UNPOOLED`. Set the Clerk test instance keys and Cloudinary credentials from `.env.example`. Set `NEXT_PUBLIC_SITE_URL` to the exact preview origin. Set the publishable Clerk key and Cloudinary cloud name at build time. Keep each environment's secret values in its own secret store.
+2. Run `npm run db:generate` and then `npm run db:migrate` against the staging branch. The app uses the pooled URL through the Neon driver adapter. Prisma Migrate and the operator commands use the direct URL from a separate release environment. Give the runtime role the app's data permissions and keep role assignments and schema changes in the release role.
+3. Back up the current database and media. Export a consistent copy of the application records with [the read-only export query](prisma/legacy-export.sql). Save the JSON result outside the repository with restricted access. Keep the original authentication data and storage backups in the source system.
+4. Copy each referenced uploaded image to the corporate Cloudinary cloud and verify the resulting HTTPS URL opens. Record the mappings in a JSON array with `source`, `url`, `cloudinaryId`, `width`, `height`, `bytes`, and `format`. Use the exact old stored path as `source`. Bundled `/media/*.webp` images may retain their paths. Then run `npm run db:import -- <snapshot.json> <media-map.json>` and compare counts. Repeat with `--apply` to import into the empty staging branch. The import preserves record IDs, timestamps, relationships, draft states, business URLs, and role rows.
+5. Invite the approved administrators to Clerk. Review each identity before running `npm run db:link-admin -- <existing-admin-uuid> <verified-clerk-user-id> --apply`. Imported users start unlinked. For a branch with zero administrator roles, an approved operator can use `first-admin` in place of the UUID. When using the optional `/api/webhooks/clerk` endpoint, configure its signing secret and enable `user.deleted` to disable the associated app account. API clients switch to a Clerk session bearer token issued on the configured site origin.
+6. Deploy the configured preview and verify all four business profiles, catalogue and sitemap, administrator and ordinary account permissions, media uploads and replacement, and inquiry persistence and quotas. Media uploads run on the server. Replacement queues the previous asset only if it is unreferenced. With explicit approval for the selected asset, `npm run db:purge-media -- <asset-uuid> --apply` deletes that eligible asset. The command without `--apply` checks eligibility.
+7. Plan a short write pause for admin and inquiry writes, then repeat the export/import verification on the production branch and switch the deployment. Keep the existing environment, source data and snapshots available during the rollback window. If rollback follows target writes, reconcile those writes before reopening the original backend.
 
-## Testing the storefront end to end
+### Environment variables
 
-1. **Browse & search**: add a category and a product (with at least one variant) at `/admin/categories` and `/admin/products/new`, then confirm it shows up on `/products`, its category page, and `/search?q=...`.
-2. **Cart**: add to cart as a guest (no login) — it should persist across a page reload (cookie-backed). Adjust quantity and remove items on `/cart`.
-3. **Guest checkout**: from `/cart`, go to `/checkout`, fill the address form, pay with the Stripe test card. Confirm the order shows up in `/admin/orders` with status `PAID`, and that stock decremented on the product's variant.
-4. **Account + cart merge**: add something to cart as a guest, then register a new account — the cart should carry over instead of resetting to empty.
-5. **Admin order flow**: on `/admin/orders/[id]`, change the status to `SHIPPED` — it should immediately reflect on the customer's `/account/orders`.
-6. **CSV import**: try `/admin/products/import` with a small CSV (columns documented on that page) to bulk-load products.
-7. **Rate limiting**: submitting the register form more than 10 times in 15 minutes from the same IP should start returning "Too many attempts" — this is expected, not a bug.
+| Name | Value |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | The site origin, such as `http://localhost:3000` or your production HTTPS origin. Used in canonical URLs, structured data, and the sitemap. |
+| `DATABASE_URL` | Pooled Neon URL for the app. |
+| `DATABASE_URL_UNPOOLED` | Direct Neon URL for Prisma migrations and operator commands. |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` | Matching Clerk instance keys. |
+| `CLERK_WEBHOOK_SIGNING_SECRET` | Optional signing secret for account-deletion events. |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Cloudinary account settings for site media. |
+| `INQUIRY_RATE_LIMIT_SECRET` | A server-only value of 64 hexadecimal characters. Generate once for each environment. |
+| `INQUIRY_TRUSTED_IP_HEADER` | Optional for self-hosting. A header set and overwritten by your reverse proxy with a single canonical client IP. Vercel uses its platform-supplied header automatically. With no trusted IP, submissions share a rate bucket. |
 
-## Build status
+Generate the inquiry secret locally and store it in your deployment secret manager and local environment as appropriate.
 
-This project is being built milestone by milestone per the PRD:
+```sh
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
 
-1. **Project setup** — Next.js + Tailwind + Prisma schema + auth scaffolding ✅
-2. **Catalog** — categories, products (with variants), admin CRUD, CSV bulk import, storefront browse/category/search/detail pages ✅
-3. **Cart** — add/update/remove, persists for guests (cookie) and accounts (DB), merges into the account on login/register ✅
-4. **Checkout & payments** — Stripe Payment Intents + webhook-confirmed order creation ✅ (free shipping, no tax for MVP)
-5. **Accounts** — order history, address book (with checkout prefill + "save this address") ✅ (password reset UI is still a stub pending an email provider)
-6. **Admin dashboard** — order list/filter/status updates, customers, sales (30d) + low-stock alerts ✅
-7. **Polish** — SEO (sitemap, robots.txt, per-page metadata, canonical URLs, noindex on account/admin/cart/checkout), fixed missing /about and /contact pages, transactional emails (order confirmation + shipping update via Resend), custom 404/error pages, route-level loading skeletons, and an accessibility pass (form labels, heading order, color contrast) verified with axe-core ✅
-8. **Pre-launch** — env var audit, security review, seed-data safety ✅
+### Content to supply before launch
 
-## Design pass (post-PRD addendum)
+- **Settings and CEO** — verified contact details, social URLs, logos, an official portrait, and any approved biography or corporate copy.
+- **Businesses** — official HTTPS URLs for ANAMIGO Fleet and ANAMSOFT. The site enables each visit link once its URL is saved. ANAMIGO Fleet and ANAMSOFT each have an introduction page on this site.
+- **Products and categories** — add real product descriptions, rights-cleared photos and alt text, and direct U.S. Amazon URLs containing an ASIN. The app checks URL structure and domain. Open the listing to verify the product and availability before publishing. Prices are optional and manually maintained.
+- **Privacy and terms** — review the supplied drafts against the live company contact, hosting setup, and inquiry retention practices before publishing.
 
-A follow-up brief asked for a considered, premium visual identity instead of default-looking Tailwind components. Delivered: the "Warm Ceramic" design system above, a slide-in cart drawer (`components/storefront/CartDrawer.jsx`) with an add-to-cart micro-interaction and live badge count, scroll-reveal entrances and staggered product-grid animation, product-card hover crossfade, and animated checkout step transitions — across the full storefront (home, browse, product detail, cart, checkout, auth, account, about/contact, 404/error). The admin panel was intentionally left as-is; the brief scoped this to the customer-facing storefront.
+Generated illustrations in [public/media](public/media) depict generic architecture, shipping cartons, a delivery van, and a semiconductor. Cloudinary serves uploaded site media. Use publication-ready images for this public delivery path. The reviewed media purge command handles eligible orphaned assets.
 
-## Pre-launch checklist
+The four WebP files were cropped from a contact sheet created with built-in ImageGen.
 
-Done in code:
-- [x] Browse → cart → Stripe checkout → webhook-confirmed order, end to end
-- [x] Orders only ever created from the Stripe webhook, never the checkout page — a failed/abandoned payment creates no order
-- [x] Admin can manage products, categories, and order statuses
-- [x] Guest checkout works without an account
-- [x] Responsive (checked at 375px/768px/1280px, no horizontal overflow) and accessible (0 axe-core violations across public/auth/account/admin pages)
-- [x] No secrets in source or git history; `.env.example` covers every `process.env` var the app reads
-- [x] Passwords hashed with bcrypt; cart/address/order mutations verify ownership; admin routes gated by role
-- [x] Rate limiting on register, login, and checkout-intent creation (in-memory — see `lib/rateLimit.js` for the multi-instance-serverless caveat)
-- [x] `prisma/seed.js` refuses to seed the default admin password when `NODE_ENV=production`
+The Earth textures are by Solar System Scope and licensed under CC BY 4.0. The source maps were converted to WebP, the cloud layer was downscaled, and the static poster was rendered from those maps. The Natural Earth land dataset used for the interactive map is in the public domain. [Solar System Scope textures](https://www.solarsystemscope.com/textures/) · [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/) · [Natural Earth terms](https://www.naturalearthdata.com/about/terms-of-use/)
 
-Still needs a decision or real credentials from you before going live:
-- [ ] Real Stripe **live-mode** keys + a production webhook endpoint (currently test-mode keys)
-- [ ] An email domain verified with Resend, so order confirmation/shipping emails actually send (`RESEND_API_KEY` / `EMAIL_FROM`)
-- [ ] A real Postgres database reachable from wherever this deploys, with `npx prisma migrate deploy` run against it
-- [ ] A decision on image hosting (Cloudinary/S3) — until then, `next.config.mjs` serves images unoptimized rather than guessing a `remotePatterns` host
-- [ ] A real domain for `NEXT_PUBLIC_SITE_URL` / `NEXTAUTH_URL` (sitemap and canonical URLs currently point at whatever this is set to)
-- [ ] A Lighthouse run against a real deployment (this sandbox couldn't run one — no browser devtools protocol access to a live Vercel URL from here)
+<details>
+<summary>ImageGen prompt</summary>
+
+> Create one landscape 3:2 raster contact sheet for a premium minimalist corporate website. Strict layout: top 2/3 is ONE uninterrupted wide editorial architecture photograph, bottom 1/3 is three equal-width separate photos, no gutters, intended for cropping into four files. Top: upward street-level perspective of a very dark midnight navy glass and concrete modern high rise on RIGHT side, diagonal lines converging to upper middle, left 43% near-solid dark midnight gradient of sky for white copy overlay. A handful of warm office lights, deep twilight, quiet international editorial style, realistic architecture, no identifiable location. Bottom left: premium close up stack of three unbranded kraft shipping boxes in warm light. Bottom middle: rear 3/4 white unbranded delivery van at modern industrial loading bay in Spain-inspired environment, architectural greys. Bottom right: macro photography of blue illuminated dark semiconductor chip / precise electronic board. Photos only, no text, signs, logos, humans, watermark, frames, or borders.
+
+</details>
+
+## Admin API
+
+The dashboard and the HTTP API use the same record validation and server-side administrator checks. API clients send `Authorization: Bearer <Clerk session token>` from the website administrator’s authenticated session. The publishable key alone cannot access these endpoints. Use HTTPS outside local development.
+
+| Resource under `/api/admin/` | Collection | Individual record |
+| --- | --- | --- |
+| `products`, `categories`, `gallery`, `socials` | GET, POST | GET, PUT, DELETE with a record UUID |
+| `businesses` | GET | GET, PUT with a record UUID |
+| `inquiries` | GET | GET, PUT, DELETE with a record UUID |
+| `settings`, `ceo` | GET, PUT | Use the collection URL |
+
+POST to `/api/admin/inquiries/<id>/read` to mark an inquiry as read. Visitors submit inquiries through the rate-limited contact form. Collection reads accept `page` and `limit` and return `data`, `page`, `limit`, and `total`. The limit defaults to 25 and accepts up to 100.
+
+For writes, submit JSON or multipart form data using the dashboard editor’s field names. PUT takes the full editable record. For example, send `{"name":"Office supplies","slug":"office-supplies"}` to POST `/api/admin/categories`. Use multipart data for images. The request cap is 4 MB, and existing individual image limits apply. Successful writes return the affected record ID. Keep access tokens out of source files and shared logs.
+
+## Verification
+
+```sh
+npm run typecheck
+npm run lint
+npm run test:db
+npm run build
+npm test
+```
+
+Run the repeatable code, database, and browser checks with one command.
+
+```sh
+npm run check
+```
+
+The PostgreSQL suite applies the Prisma migration in PGlite. Playwright runs the public routes, access guards, and Earth scene on an isolated production build without provider credentials. It uses Edge by default, or Chrome when configured through PLAYWRIGHT_BROWSER_CHANNEL. Use the staging smoke test below to verify the hosted database, sign-in, uploads, and inquiries.
+
+## Deploy on Vercel
+
+1. Put the source in your Git repository and import it as a Next.js project in Vercel.
+2. Apply the migration and configure Clerk, Cloudinary, the admin role, and the inquiry secret as above. Add the environment variables for each intended Vercel environment. Use the final HTTPS origin for production.
+3. Deploy and open the result. Sign in with an administrator and verify an ordinary Clerk account cannot manage content. Create a draft product, upload and preview its image, publish it, confirm the Amazon link, and unpublish or remove the test entry. Send a test inquiry through the public form, confirm it appears in the admin inbox, and delete it. Verify the configured business links and canonical origin.
